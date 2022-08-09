@@ -9,6 +9,7 @@
       <div>
         <div
             class="image-input__field"
+            v-bind:class="{  'image-input__field_false': !canDrag }"
             @dragover.prevent="drag = true"
             @dragleave.prevent="drag = false"
             @drop.prevent="onDrop"
@@ -32,16 +33,26 @@ export default defineComponent({
   },
   methods:{
     onDrop(event:any) {
+      if(!this.canDrag)
+      {
+        return;
+      }
+
       this.isDragOver = false;
       const files = event.dataTransfer.files;
       if (files.length !== 1 || files[0].type.indexOf("image") !== 0) {
         return;
       }
       this.file = (event.dataTransfer as DataTransfer).files[0]
+      this.canDrag = false;
+      setTimeout(() =>
+      {
+        this.canDrag = true;
+      }, 2000)
     },
     onWindowDrop(event:any){
       event.preventDefault();
-    }
+    },
   },
 
   data () {
@@ -49,7 +60,8 @@ export default defineComponent({
       //
       isDragOver:true as boolean,
       drag:false as boolean,
-      file:null as File | null
+      file:null as File | null,
+      canDrag : true as boolean
     }
   },
 })
@@ -63,6 +75,15 @@ export default defineComponent({
   border-radius: 15px;
   padding: 20px;
   margin: 30px;
+}
+.image-input__field_false {
+  width: 500px;
+  height: 300px;
+  border: 2px solid lightgray;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 30px;
+  color: lightgray;
 }
 .window_area{
   background: lightcyan;
